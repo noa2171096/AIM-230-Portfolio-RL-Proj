@@ -1,0 +1,1 @@
+RL software to manage an N asset stock portfolio. Inspired from - "Reinforcement Learning in Finance" book by Dr. Yves J. Hilpisch. "Three Assett Allocation" code is turned into arbitrary allocation problem.

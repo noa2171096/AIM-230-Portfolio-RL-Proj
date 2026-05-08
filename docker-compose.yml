@@ -1,0 +1,127 @@
+# RL Portfolio Advisor — Docker Compose
+
+services:
+
+  # ===================
+  # FastAPI Application
+  # ===================
+  api:
+    build:
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./saved_models:/app/saved_models
+      - ./uploads:/app/uploads
+      - ./alembic:/app/alembic        
+      - ./alembic.ini:/app/alembic.ini 
+    environment:
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=RLfin
+      - DB_PASSWORD=RLfin
+      - DB_NAME=RLfin
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ===================
+  # Celery Worker
+  # ===================
+  worker:
+    build:
+      context: .
+      target: development
+    command: celery -A app.workers.celery_app worker --loglevel=info --pool=solo
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./saved_models:/app/saved_models
+    environment:
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=RLfin
+      - DB_PASSWORD=RLfin
+      - DB_NAME=RLfin
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  # ===================
+  # PostgreSQL
+  # ===================
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=RLfin
+      - POSTGRES_PASSWORD=RLfin
+      - POSTGRES_DB=RLfin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U RLfin -d RLfin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ===================
+  # Redis
+  # ===================
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
+  # ===================
+  # Flower — optional
+  # ===================
+  flower:
+    build:
+      context: .
+      target: development
+    command: celery -A app.workers.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - worker
+    profiles:
+      - monitoring
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,11 @@
+torch
+transformers
+yfinance
+finnhub-python
+scikit-learn
+gymnasium
+pandas
+numpy
+scipy
+matplotlib
+scikit-learn

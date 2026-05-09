@@ -1,68 +1,13 @@
-# Virtual environment
 rl_portfolio_env/
-venv/
-.venv/
-env/
-
-# Python
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-*.egg-info/
-dist/
-build/
-.eggs/
-
-# Environment variables 
 .env
-.env.local
-.env.production
-
-# Data — too large for GitHub
 data/
-*.pkl
-*.parquet
-*.csv
-
-# ML models b
 saved_models/
-models/finbert/
-*.pt
-*.pth
-*.bin
-*.safetensors
-
-# User uploads
 uploads/
-
-# Database
-*.db
-*.sqlite3
-
-# Logs
-*.log
-logs/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Docker volumes 
-postgres_data/
-redis_data/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Coverage
-.coverage
-htmlcov/
+app/ml/models/
+*.pkl
+*.pt
+*.safetensors
+*.bin
+.git/

@@ -79,7 +79,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         from transformers import BertTokenizer, BertForSequenceClassification
         finbert_path = "app/ml/models/finbert"
 
-        if os.path.exists(os.path.join(finbert_path, "config.json")):
+        if os.path.exists(os.path.join(finbert_path, "model.safetensors")) or os.path.exists(os.path.join(finbert_path, "pytorch_model.bin")):
             logger.info("Loading FinBERT from local cache...")
             tokenizer = BertTokenizer.from_pretrained(finbert_path)
             model     = BertForSequenceClassification.from_pretrained(finbert_path)
@@ -97,6 +97,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     except Exception as e:
         logger.warning(f"FinBERT failed to load: {e} — sentiment features will be zero")
+        import traceback
+        traceback.print_exc()   
         app.state.finbert_tokenizer = None
         app.state.finbert_model     = None
 

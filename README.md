@@ -1,4 +1,11 @@
 # AIM-230-Portfolio-RL-Proj
+
+## Acknowledgements
+- Reinforcement Learning for Finance
+by Yves Hilpisch (base Model and Environment)
+- Visual Vault (API arch. based on)
+- Claude (helped with overall process and verifying/constructuing/re-organizing code)
+  
 ## Abstract
 Personal wealth management is a dominant market that is making use of the 
 advancements of ML to deal with the vast quantities of data involved. The scope of the field 
